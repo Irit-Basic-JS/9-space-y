@@ -6,7 +6,12 @@ export class Client {
    * @return {Promise<string | null>} username
    * */
   async getUser() {
-    throw new Error("Not implemented");
+    return new Promise((resolve) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', '/api/getUser/', false);
+      xhr.send();
+      xhr.response === '' ? resolve(null) : resolve(xhr.response);
+    })
   }
 
   /**
@@ -17,7 +22,12 @@ export class Client {
    * @return {Promise<string | null>} username
    * */
   async loginUser(username) {
-    throw new Error("Not implemented");
+    return new Promise(resolve => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', `/api/loginUser/${username}`, false);
+      xhr.send();
+      xhr.response === '' ? resolve(null) : resolve(xhr.response);
+    })
   }
 
   /**
@@ -26,7 +36,9 @@ export class Client {
    * @return {void}
    * */
   async logoutUser() {
-    throw new Error("Not implemented");
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', '/api/logoutUser/', false);
+    xhr.send();
   }
 
   /**
