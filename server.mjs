@@ -10,6 +10,8 @@ const rootDir = process.cwd();
 const port = 3000;
 const app = express();
 
+app.use('/', express.static('spa/build'));
+
 app.get("/client.mjs", (_, res) => {
   res.header("Cache-Control", "private, no-cache, no-store, must-revalidate");
   res.sendFile(path.join(rootDir, "client.mjs"), {
@@ -18,6 +20,8 @@ app.get("/client.mjs", (_, res) => {
   });
 });
 
+
+
 app.get("/", (_, res) => {
   res.send(":)");
 });
@@ -25,3 +29,12 @@ app.get("/", (_, res) => {
 app.listen(port, () => {
   console.log(`App listening on port ${port}`);
 });
+
+app.get(/\//, (req, res) => {
+  res.redirect("index.html");
+});
+
+https.createServer({
+  key: fs.readFileSync('certs/server.key'),
+  cert: fs.readFileSync('certs/server.cert')
+}, app);
