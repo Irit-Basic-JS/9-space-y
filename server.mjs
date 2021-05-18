@@ -9,6 +9,7 @@ import fetch from "node-fetch";
 const rootDir = process.cwd();
 const port = 3000;
 const app = express();
+app.use(express.static('spa/build'));
 
 app.get("/client.mjs", (_, res) => {
   res.header("Cache-Control", "private, no-cache, no-store, must-revalidate");
@@ -18,10 +19,13 @@ app.get("/client.mjs", (_, res) => {
   });
 });
 
-app.get("/", (_, res) => {
-  res.send(":)");
+app.get("/*", (_, res) => {
+  res.sendFile(path.join(rootDir,'spa/build/index.html'));
 });
 
-app.listen(port, () => {
+https.createServer({
+  key: fs.readFileSync('certs/server.key'),
+  cert: fs.readFileSync('certs/server.cert')
+},app).listen(port, () => {
   console.log(`App listening on port ${port}`);
 });

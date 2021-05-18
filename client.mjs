@@ -6,7 +6,7 @@ export class Client {
    * @return {Promise<string | null>} username
    * */
   async getUser() {
-    throw new Error("Not implemented");
+      return this.user;
   }
 
   /**
@@ -17,7 +17,7 @@ export class Client {
    * @return {Promise<string | null>} username
    * */
   async loginUser(username) {
-    throw new Error("Not implemented");
+    this.user = username;
   }
 
   /**
@@ -26,7 +26,7 @@ export class Client {
    * @return {void}
    * */
   async logoutUser() {
-    throw new Error("Not implemented");
+    this.user = null;
   }
 
   /**
