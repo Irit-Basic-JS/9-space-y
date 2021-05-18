@@ -1,3 +1,5 @@
+
+
 export class Client {
   /**
    * Должен возвращать имя пользователя или null
@@ -16,6 +18,7 @@ export class Client {
    * @param {string} username
    * @return {Promise<string | null>} username
    * */
+
   async loginUser(username) {
     throw new Error("Not implemented");
   }
