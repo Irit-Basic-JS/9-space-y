@@ -6,7 +6,8 @@ export class Client {
    * @return {Promise<string | null>} username
    * */
   async getUser() {
-      return this.user;
+    let response = await fetch("/api/user");
+    return new Promise((resolve => resolve(response.text())));
   }
 
   /**
@@ -17,7 +18,8 @@ export class Client {
    * @return {Promise<string | null>} username
    * */
   async loginUser(username) {
-    this.user = username;
+    await fetch(`/api/login?username=${username}`);
+    return new Promise((resolve) => resolve(username));
   }
 
   /**
@@ -26,7 +28,7 @@ export class Client {
    * @return {void}
    * */
   async logoutUser() {
-    this.user = null;
+    await fetch(`/api/logout`);
   }
 
   /**
@@ -50,7 +52,9 @@ export class Client {
    * @return {Promise<About>}
    * */
   async getInfo() {
-    throw new Error("Not implemented");
+    const response = await fetch('/api/info');
+    if (response.ok)
+      return response.json();
   }
 
   /**
@@ -63,7 +67,9 @@ export class Client {
    * @return {Promise<EventBrief[]>}
    * */
   async getHistory() {
-    throw new Error("Not implemented");
+    const response = await fetch('/api/history');
+    if (response.ok)
+      return response.json();
   }
 
   /**
@@ -80,7 +86,9 @@ export class Client {
    * @return {Promise<EventFull>}
    * */
   async getHistoryEvent(id) {
-    throw new Error("Not implemented");
+    const response = await fetch(`/api/history/event?id=${id}`);
+    if (response.ok)
+      return response.json();
   }
 
   /**
@@ -93,7 +101,9 @@ export class Client {
    * @return {Promise<RocketBrief[]>}
    * */
   async getRockets() {
-    throw new Error("Not implemented");
+    const response = await fetch(`/api/rockets`);
+    if (response.ok)
+      return response.json();
   }
 
   /**
@@ -118,7 +128,9 @@ export class Client {
    * @return {Promise<RocketFull>}
    * */
   async getRocket(id) {
-    throw new Error("Not implemented");
+    const response = await fetch(`/api/rocket?id=${id}`);
+    if (response.ok)
+      return response.json();
   }
 
   /**
@@ -135,7 +147,9 @@ export class Client {
    * @return {Promise<Roadster>}
    * */
   async getRoadster() {
-    throw new Error("Not implemented");
+    const response = await fetch(`/api/roadster`);
+    if (response.ok)
+      return response.json();
   }
 
   /**
@@ -152,7 +166,9 @@ export class Client {
    * @return {Promise<Item[]>}
    * */
   async getSentToMars() {
-    throw new Error("Not implemented");
+    const response = await fetch(`/api/roadster`);
+    if (response.ok)
+      return response.json();
   }
 
   /**
@@ -170,6 +186,7 @@ export class Client {
    * @return {Promise<Item[]>}
    * */
   async sendToMars(item) {
+
     throw new Error("Not implemented");
   }
 
