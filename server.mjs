@@ -9,6 +9,8 @@ import fetch from "node-fetch";
 const rootDir = process.cwd();
 const port = 3000;
 const app = express();
+const items = {};
+let id = 0;
 
 let checkLogin = function (req, res, next) {
     const path = req.path;
@@ -18,6 +20,7 @@ let checkLogin = function (req, res, next) {
     next();
 };
 
+app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.static('spa/build'));
 
@@ -108,9 +111,39 @@ app.get('/api/roadster', async (req, res) => {
     }
 });
 
+app.get("/api/item", (req, res) => {
+    let answer = [];
+    for (let i in items) {
+        answer.push(items[i])
+    }
+    res.json(answer);
+});
+
+app.post("/api/item", (req, res) => {
+    const item = req.body;
+    item["id"] = id;
+    items[id] = item;
+    id++;
+    let answer = [];
+    for (let i in items) {
+        answer.push(items[i])
+    }
+    res.json(answer);
+    res.status(200);
+});
+
+app.delete("/api/item", function (req, res) {
+    const item = req.body;
+    delete items[item.id];
+    let answer = [];
+    for (let i in items) {
+        answer.push(items[i])
+    }
+    res.json(answer);
+    res.status(200);
+});
 
 app.use(checkLogin);
-
 app.get("/*", (_, res) => {
     res.sendFile(path.join(rootDir, 'spa/build/index.html'));
 });
