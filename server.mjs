@@ -29,8 +29,6 @@ app.get("/api/logout", (req, res) => {
   res.sendStatus(200);
 });
 
-app.use('/', express.static('spa/build'));
-
 app.get("/client.mjs", (_, res) => {
   res.header("Cache-Control", "private, no-cache, no-store, must-revalidate");
   res.sendFile(path.join(rootDir, "client.mjs"), {
