@@ -6,12 +6,8 @@ export class Client {
    * @return {Promise<string | null>} username
    * */
   async getUser() {
-    return new Promise((resolve) => {
-      const xhr = new XMLHttpRequest();
-      xhr.open('GET', '/api/getUser/', false);
-      xhr.send();
-      xhr.response === '' ? resolve(null) : resolve(xhr.response);
-    })
+    const response = await fetch("/api/user");
+    return new Promise(resolve => resolve(response.text()));
   }
 
   /**
@@ -22,12 +18,8 @@ export class Client {
    * @return {Promise<string | null>} username
    * */
   async loginUser(username) {
-    return new Promise(resolve => {
-      const xhr = new XMLHttpRequest();
-      xhr.open('GET', `/api/loginUser/${username}`, false);
-      xhr.send();
-      xhr.response === '' ? resolve(null) : resolve(xhr.response);
-    })
+    await fetch(`/api/login?username=${username}`);
+    return new Promise((resolve) => resolve(username));
   }
 
   /**
@@ -36,9 +28,7 @@ export class Client {
    * @return {void}
    * */
   async logoutUser() {
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', '/api/logoutUser/', false);
-    xhr.send();
+    await fetch(`/api/logout`);
   }
 
   /**
@@ -62,7 +52,9 @@ export class Client {
    * @return {Promise<About>}
    * */
   async getInfo() {
-    throw new Error("Not implemented");
+    const response = await fetch("/api/info");
+    if (response.ok)
+      return new Promise(resolve => resolve(response.json()));
   }
 
   /**
@@ -75,7 +67,9 @@ export class Client {
    * @return {Promise<EventBrief[]>}
    * */
   async getHistory() {
-    throw new Error("Not implemented");
+    const response = await fetch("/api/history");
+    if (response.ok)
+      return new Promise(resolve => resolve(response.json()));
   }
 
   /**
@@ -92,7 +86,9 @@ export class Client {
    * @return {Promise<EventFull>}
    * */
   async getHistoryEvent(id) {
-    throw new Error("Not implemented");
+    const response = await fetch(`/api/history/event/?id=${id}`);
+    if (response.ok)
+      return new Promise(resolve => resolve(response.json()));
   }
 
   /**
@@ -105,7 +101,9 @@ export class Client {
    * @return {Promise<RocketBrief[]>}
    * */
   async getRockets() {
-    throw new Error("Not implemented");
+    const response = await fetch('/api/rockets');
+    if (response.ok)
+      return new Promise(resolve => resolve(response.json()));
   }
 
   /**
@@ -130,7 +128,9 @@ export class Client {
    * @return {Promise<RocketFull>}
    * */
   async getRocket(id) {
-    throw new Error("Not implemented");
+    const response = await fetch(`/api/rockets/rocket/?id=${id}`);
+    if (response.ok)
+      return new Promise(resolve => resolve(response.json()));
   }
 
   /**
@@ -147,7 +147,9 @@ export class Client {
    * @return {Promise<Roadster>}
    * */
   async getRoadster() {
-    throw new Error("Not implemented");
+    const response = await fetch(`/api/roadster`);
+    if (response.ok)
+      return new Promise(resolve => resolve(response.json()));
   }
 
   /**

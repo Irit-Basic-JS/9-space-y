@@ -10,10 +10,9 @@ import fetch from "node-fetch";
 const rootDir = process.cwd();
 const port = 3000;
 const app = express();
-const urlencodedParser = bodyParser.urlencoded({ extended: false });
 
 app.use(express.static('spa/build'));
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser())
 
 app.get("/client.mjs", (_, res) => {
@@ -25,28 +24,80 @@ app.get("/client.mjs", (_, res) => {
 });
 
 app.get("/", (_, res) => {
-  res.send(":)");
+  res.sendFile(path.join(process.cwd(), "spa/build/index.html"));
 });
 
-app.get('/api/getUser/', urlencodedParser, (req, res) => {
-  if (req.cookies.username) {
-    res.send(req.cookies.username);
-  }
-  else {
-    res.send('');
-  }
+app.get("/login", (_, res) => {
+  res.sendFile(path.join(rootDir, "spa/build/index.html"));
+});
+
+app.get('/api/user/', (req, res) => {
+  const userName = req.cookies.username;
+  res.send(userName);
 })
 
-app.get('/api/loginUser/:username', urlencodedParser, (req, res) => {
-  const username = req.params.username;
-  res.cookie("username", username, { httpOnly: true, secure: true, sameSite: 'strict' });
+app.get("/api/login", (req, res) => {
+  const username = req.query.username;
+  res.cookie("username", username, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "Strict",
+  });
   res.send(username);
-})
+});
 
-app.get('/api/logoutUser/', urlencodedParser, (_, res) => {
-  res.clearCookie('username');
-  res.redirect('/login');
-})
+app.get("/api/logout", (req, res) => {
+  res.clearCookie("username");
+  res.sendStatus(200);
+});
+
+app.get("/api/info", async (req, res) => {
+  const response = await fetch("https://api.spacexdata.com/v3/info");
+  response.ok
+    ? res.json(await response.json())
+    : res.status(response.status);
+});
+
+app.get("/api/history", async (req, res) => {
+  const response = await fetch("https://api.spacexdata.com/v3/history");
+  response.ok
+    ? res.json(await response.json())
+    : res.status(response.status);
+});
+
+app.get("/api/history/event", async (req, res) => {
+  const response = await fetch(`https://api.spacexdata.com/v3/history/${req.query.id}`);
+  response.ok
+    ? res.json(await response.json())
+    : res.status(response.status);
+});
+
+app.get("/api/rockets", async (req, res) => {
+  const response = await fetch("https://api.spacexdata.com/v3/rockets");
+  response.ok
+    ? res.json(await response.json())
+    : res.status(response.status);
+});
+
+app.get("/api/rockets/rocket", async (req, res) => {
+  const response = await fetch(`https://api.spacexdata.com/v3/rockets/${req.query.id}`);
+  if (response.ok) {
+    const json = await response.json();
+    res.json(json);
+  } else {
+    res.status(response.status);
+  }
+});
+
+app.get("/api/roadster", async (req, res) => {
+  const response = await fetch(`https://api.spacexdata.com/v3/roadster`);
+  if (response.ok) {
+    const json = await response.json();
+    res.json(json);
+  } else {
+    res.status(response.status);
+  }
+});
 
 app.get("*", (_, res) => {
   res.redirect('/');
