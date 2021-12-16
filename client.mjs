@@ -6,7 +6,11 @@ export class Client {
    * @return {Promise<string | null>} username
    * */
   async getUser() {
-    throw new Error("Not implemented");
+    return fetch('/api/username').then(async res => {
+      let text = await res.text();
+      console.log(text);
+      return text;
+    });
   }
 
   /**
@@ -17,7 +21,7 @@ export class Client {
    * @return {Promise<string | null>} username
    * */
   async loginUser(username) {
-    throw new Error("Not implemented");
+    return fetch(`/api/login?username=${username}`).then(async res => await res.text());
   }
 
   /**
@@ -26,7 +30,7 @@ export class Client {
    * @return {void}
    * */
   async logoutUser() {
-    throw new Error("Not implemented");
+    await fetch('/api/logout');
   }
 
   /**
