@@ -10,6 +10,19 @@ const rootDir = process.cwd();
 const port = 3000;
 const app = express();
 
+app.use(express.static('spa/build'));
+app.use(cookieParser())
+app.use(bodyParser.urlencoded({ extended: false }));
+
+https.createServer({
+  key: fs.readFileSync('certs/server.key'),
+  cert: fs.readFileSync('certs/server.cert')
+}, app)
+    .listen(port, function () {
+      console.log(`App listening on port ${port}. Go to https://localhost:3000`)
+    })
+
+
 app.get("/client.mjs", (_, res) => {
   res.header("Cache-Control", "private, no-cache, no-store, must-revalidate");
   res.sendFile(path.join(rootDir, "client.mjs"), {
@@ -19,9 +32,9 @@ app.get("/client.mjs", (_, res) => {
 });
 
 app.get("/", (_, res) => {
-  res.send(":)");
+  res.sendFile(path.join(process.cwd(), "spa/build/index.html"));
 });
 
-app.listen(port, () => {
-  console.log(`App listening on port ${port}`);
+app.get("*", (_, res) => {
+  res.redirect('/')
 });
