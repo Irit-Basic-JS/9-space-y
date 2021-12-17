@@ -9,10 +9,8 @@ const rootDir = process.cwd();
 const port = 3000;
 const app = express();
 
-app.use(express.static("spa/build"));
 app.use(cookieParser());
 app.use(bodyParser.json());
-
 app.use(function (req, res, next) {
     if (['/login', '/api', '/static', '/client.mjs']
         .some(url => req.path.startsWith(url)) || req.cookies.username) {
@@ -21,6 +19,8 @@ app.use(function (req, res, next) {
         res.redirect('/login');
     }
 })
+
+app.use(express.static("spa/build"));
 
 app.get("/client.mjs", (_, res) => {
     res.header("Cache-Control", "private, no-cache, no-store, must-revalidate");
