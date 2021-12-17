@@ -6,7 +6,8 @@ export class Client {
    * @return {Promise<string | null>} username
    * */
   async getUser() {
-    return await fetch('/api/username').then(async res => await res.text());
+    let username = fetch('/api/username').then(async res => (await res.json()).username);
+    return username || null;
   }
 
   /**
@@ -17,8 +18,8 @@ export class Client {
    * @return {Promise<string | null>} username
    * */
   async loginUser(username) {
-    await fetch(`/api/login?username=${username}`).then(async res => await res.text());
-    return username || null
+    await fetch(`/api/login?username=${username}`);
+    return username || null;
   }
 
   /**
@@ -153,8 +154,7 @@ export class Client {
    * @return {Promise<Item[]>}
    * */
   async getSentToMars() {
-    let response = await fetch('api/user/sendToMars/get');
-    return (await response.json());
+    return (await fetch('api/user/sendToMars/get')).json();
   }
 
   /**
@@ -172,15 +172,13 @@ export class Client {
    * @return {Promise<Item[]>}
    * */
   async sendToMars(item) {
-    let response = await fetch('api/user/sendToMars/send', {
+    return (await fetch('api/user/sendToMars/send', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({'item': item})
-    });
-
-    return (await response.json());
+    })).json();
   }
 
   /**
@@ -191,14 +189,12 @@ export class Client {
    * @return {Promise<Item[]>}
    * */
   async cancelSendingToMars(item) {
-    let response = await fetch('api/user/sendToMars/cancel', {
+    return (await fetch('api/user/sendToMars/cancel', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({'item': item})
-    });
-
-    return (await response.json());
+    })).json();
   }
 }

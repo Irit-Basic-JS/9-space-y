@@ -12,16 +12,15 @@ const app = express();
 app.use(express.static("spa/build"));
 app.use(cookieParser());
 app.use(bodyParser.json());
-const notRedirectingUrls = ['login', 'api', 'static'];
+
 app.use(function (req, res, next) {
-    const root = req.url.split('/')[1];
-    const shouldBeSkipped = notRedirectingUrls.includes(root);
-    const isFile = root.split('.').length > 1;
-    const haveCookie = req.cookies.username !== undefined;
-    if (shouldBeSkipped || isFile || haveCookie) {
+    console.log(req.path)
+    if (['/login', '/api', '/static', '/client.mjs']
+        .some(url => req.path.startsWith(url)) || req.cookies.username) {
         next()
-    } else
+    } else {
         res.redirect('/login');
+    }
 })
 
 app.get("/client.mjs", (_, res) => {
@@ -37,57 +36,45 @@ app.get("/", (_, res) => {
 });
 
 app.get("/api/username", (req, res) => {
-    res.send(req.cookies.username || null);
+    res.json({'username': req.cookies.username});
 });
 
 app.get("/api/login", (req, res) => {
-    const username = req.query.username;
+    let username = req.query.username;
     res.cookie("username", username);
-    res.send(username);
+    res.json({username})
 });
 
 app.get("/api/logout", (req, res) => {
     res.clearCookie('username');
 });
 
-const mars = {}
+const mars_dict = {}
+
+app.get("/api/user/sendToMars/get", (req, res) => {
+    res.json(mars_dict[req.cookies.username] || []);
+});
 
 app.post("/api/user/sendToMars/send", (req, res) => {
-    const name = req.cookies.username;
+    let username = req.cookies.username;
 
-    console.log(req.body);
-
-    const item = req.body['item'];
-
-    if (name in mars) {
-        mars[name].push(item)
-    } else {
-        mars[name] = [item];
+    if (!(username in mars_dict)) {
+        mars_dict[username] = [];
     }
+    mars_dict[username].push(req.body['item']);
 
-    console.log(mars);
-    res.json(mars[name]);
+    res.json(mars_dict[username]);
 });
+
 app.post("/api/user/sendToMars/cancel", (req, res) => {
-    const name = req.cookies.username;
+    let username = req.cookies.username;
 
-    console.log(req.body);
-
-    const item = req.body['item'];
-
-    if (name in mars) {
-        const index = mars[name].indexOf(item);
-        mars[name].splice(index, 1);
+    if (username in mars_dict) {
+        const index = mars_dict[username].indexOf(req.body['item']);
+        mars_dict[username].splice(index, 1);
     }
 
-    console.log(mars);
-    res.json(mars[name]);
-});
-app.get("/api/user/sendToMars/get", (req, res) => {
-    const name = req.cookies.username;
-
-    console.log(mars);
-    res.json(mars[name] || []);
+    res.json(mars_dict[username]);
 });
 
 app.get("/*", (req, res) => {
