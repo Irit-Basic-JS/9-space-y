@@ -2,6 +2,7 @@ import * as path from "path";
 import fs from "fs";
 import express from "express";
 import https from "https";
+import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 
 const rootDir = process.cwd();
@@ -10,16 +11,18 @@ const app = express();
 
 app.use(express.static("spa/build"));
 app.use(cookieParser());
-app.use((req, res, next) => {
-    if (req.cookies.username ||
-        req.path.startsWith("/api") ||
-        req.path.startsWith("/static") ||
-        req.path.startsWith("/login")) {
-        next();
-    } else {
-        res.redirect("/login");
-    }
-});
+app.use(bodyParser.json());
+const notRedirectingUrls = ['login', 'api', 'static'];
+app.use(function (req, res, next) {
+    const root = req.url.split('/')[1];
+    const shouldBeSkipped = notRedirectingUrls.includes(root);
+    const isFile = root.split('.').length > 1;
+    const haveCookie = req.cookies.username !== undefined;
+    if (shouldBeSkipped || isFile || haveCookie) {
+        next()
+    } else
+        res.redirect('/login');
+})
 
 app.get("/client.mjs", (_, res) => {
     res.header("Cache-Control", "private, no-cache, no-store, must-revalidate");
@@ -34,7 +37,7 @@ app.get("/", (_, res) => {
 });
 
 app.get("/api/username", (req, res) => {
-    res.send(req.cookies.username);
+    res.send(req.cookies.username || null);
 });
 
 app.get("/api/login", (req, res) => {
@@ -47,7 +50,47 @@ app.get("/api/logout", (req, res) => {
     res.clearCookie('username');
 });
 
-app.get("/*", (_, res) => {
+const mars = {}
+
+app.post("/api/user/sendToMars/send", (req, res) => {
+    const name = req.cookies.username;
+
+    console.log(req.body);
+
+    const item = req.body['item'];
+
+    if (name in mars) {
+        mars[name].push(item)
+    } else {
+        mars[name] = [item];
+    }
+
+    console.log(mars);
+    res.json(mars[name]);
+});
+app.post("/api/user/sendToMars/cancel", (req, res) => {
+    const name = req.cookies.username;
+
+    console.log(req.body);
+
+    const item = req.body['item'];
+
+    if (name in mars) {
+        const index = mars[name].indexOf(item);
+        mars[name].splice(index, 1);
+    }
+
+    console.log(mars);
+    res.json(mars[name]);
+});
+app.get("/api/user/sendToMars/get", (req, res) => {
+    const name = req.cookies.username;
+
+    console.log(mars);
+    res.json(mars[name] || []);
+});
+
+app.get("/*", (req, res) => {
     res.sendFile(path.join(rootDir, "spa/build/index.html"));
 });
 
