@@ -14,7 +14,6 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 
 app.use(function (req, res, next) {
-    console.log(req.path)
     if (['/login', '/api', '/static', '/client.mjs']
         .some(url => req.path.startsWith(url)) || req.cookies.username) {
         next()
