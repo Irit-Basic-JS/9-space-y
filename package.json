@@ -28,5 +28,18 @@
   "devDependencies": {
     "better-npm-run": "0.1.1",
     "prettier": "^2.2.1"
-  }
+  },
+  "description": "В задании будем делать серверную часть и клиенсткие запросы для приложения SpaceY. Приложение представляет собой SPA (Single Page Application), которое умеет работать без перезагрузки страниц браузером.",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Irit-Basic-JS/9-space-y.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Irit-Basic-JS/9-space-y/issues"
+  },
+  "homepage": "https://github.com/Irit-Basic-JS/9-space-y#readme"
 }
