@@ -45,7 +45,9 @@ app.get("/api/login", (req, res) => {
 });
 
 app.get("/api/logout", (req, res) => {
+    let username = req.cookies.username;
     res.clearCookie('username');
+    res.json({username});
 });
 
 const mars_dict = {}
