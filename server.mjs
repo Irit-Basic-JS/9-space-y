@@ -14,18 +14,15 @@ app.use(express.static('spa/build')); //1
 app.use(cookieParser()); //5
 app.use(bodyParser.json());
 
-app.get('', (req, res) => {
-  res.send('spa/build/index.html')
-});
-
 //7
 app.use((req, res, next) => {
-  const path = req.path;
-  if (!path.includes("/api") && !path.includes("/static") && path === "/login" && !req.cookies.username) {
-      res.redirect("/");
-  }
-  next();
-});
+  const cancelRedirect = ['api', 'static', 'login', 'client.mjs'];
+  const route = req.url.split("/")[1];
+
+  if (!req.cookies.username && !cancelRedirect.includes(route))
+    res.redirect("/login");
+  else next();
+}); 
 
 app.get("/client.mjs", (_, res) => {
   res.header("Cache-Control", "private, no-cache, no-store, must-revalidate");
@@ -33,6 +30,10 @@ app.get("/client.mjs", (_, res) => {
     maxAge: -1,
     cacheControl: false,
   });
+});
+
+app.get('', (req, res) => {
+  res.sendFile(path.join(rootDir, "spa/build/index.html"));
 });
 
 app.get("/", (_, res) => {
@@ -59,40 +60,10 @@ app.get("/api/logout", (req, res)=>{
   res.redirect('/');
 })
 
-app.get('/*', (req, res) => {
+app.get('/*', (req, res) => { 
   res.redirect('/');
 });
 
-
-//7 task 
-  
-
-/*async function cookieValidator (cookies) {
-  try {
-    await externallyValidateCookie(cookies.testCookie)
-  } catch {
-    app.get('/*', (req, res) => {
-      res.redirect('/');
-    });
-  }
-}
-
-
-async function validateCookies (req, res, next) {
-  await cookieValidator(req.cookies)
-  next()
-}
-
-app.use(cookieParser())
-
-app.use(validateCookies)
-
-// error handler
-app.use(function (err, req, res, next) {
-  res.status(400).send(err.message)
-  
-})
-*/
 
 //3 task
 https.createServer(
