@@ -33,7 +33,7 @@ export class Client {
    * @return {void}
    * */
   async logoutUser() {
-      await fetch('api/logout');
+      await fetch('api/logout');    
   }
 
   /**
